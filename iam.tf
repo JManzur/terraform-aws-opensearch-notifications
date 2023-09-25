@@ -78,33 +78,38 @@ resource "aws_iam_role_policy_attachment" "opensearch_notifications" {
 #######################################################################
 ### IAM Role to allow OpenSearch to send notifications to the SNS topic:
 
-data "aws_iam_policy_document" "opensearch_sns_policy" {
+data "aws_iam_policy_document" "opensearch_to_sns" {
   statement {
-    sid    = "AllowSNSPublish"
-    effect = "Allow"
-    actions = [
-      "sns:Publish"
-    ]
-    resources = [aws_sns_topic.opensearch_notifications.arn]
+    actions   = ["sns:Publish"]
+    resources = ["*"]
   }
 }
 
-resource "aws_iam_policy" "opensearch_sns" {
-  name        = "OpenSearch-SNS-Policy"
-  path        = "/"
-  description = "Permissions to publish to the SNS topic"
-  policy      = data.aws_iam_policy_document.opensearch_sns_policy.json
-  tags        = { Name = "OpenSearch-SNS-Policy" }
+resource "aws_iam_role" "opensearch_to_sns" {
+  name = "opensearch_to_sns_role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action = "sts:AssumeRole",
+        Effect = "Allow",
+        Principal = {
+          Service = "es.amazonaws.com"
+        }
+      }
+    ]
+  })
 }
 
-resource "aws_iam_role" "opensearch_sns" {
-  name               = "OpenSearch-SNS-Role"
-  assume_role_policy = data.aws_iam_policy_document.opensearch_notifications_assume.json
-  tags               = { Name = "OpenSearch-SNS-Role" }
+resource "aws_iam_policy" "opensearch_to_sns" {
+  name        = "opensearch_to_sns_policy"
+  description = "Policy for allowing OpenSearch to send notifications to SNS"
+  policy      = data.aws_iam_policy_document.opensearch_to_sns.json
 }
 
-resource "aws_iam_role_policy_attachment" "opensearch_sns" {
-  role       = aws_iam_role.opensearch_sns.name
-  policy_arn = aws_iam_policy.opensearch_sns.arn
+resource "aws_iam_policy_attachment" "opensearch_to_sns" {
+  name       = "opensearch_to_sns_attachment"
+  policy_arn = aws_iam_policy.opensearch_to_sns.arn
+  roles      = [aws_iam_role.opensearch_to_sns.name]
 }
-

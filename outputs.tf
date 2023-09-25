@@ -3,7 +3,7 @@ output "sns_topic_arn" {
   description = "The ARN of the SNS topic for OpenSearch notifications"
 }
 
-output "iam_role_arn" {
-  value       = aws_iam_role.opensearch_sns.arn
+output "opensearch_to_sns_iam_role_arn" {
+  value       = aws_iam_role.opensearch_to_sns.arn
   description = "The ARN of the IAM role for OpenSearch to send notifications to the SNS topic"
 }
