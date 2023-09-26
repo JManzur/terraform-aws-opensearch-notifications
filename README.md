@@ -4,9 +4,9 @@ This module constructs a Python Lambda function that dispatches notifications fr
 
 # Notifications format:
 
-![teams-notifications-1](images/opensearch_notifications_teams_2.png)
+![ms-teams-notifications-1](images/opensearch_notifications_teams_2.png)
 
-![teams-notifications-2](images/opensearch_notifications_teams_1.png)
+![ms-teams-notifications-2](images/opensearch_notifications_teams_1.png)
 
 # Infrastructure Diagram:
 
